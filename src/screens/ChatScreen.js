@@ -34,6 +34,8 @@ export default class ChatScreen extends Component {
     super(props)
     const user = this.props.navigation.getParam('user', {})
 
+    this.myRef = React.createRef()
+
     this.state = {
       messages: [
         { _id: 0, user: null, text: "hello", createdAt: '2019-05-23 10:20:30' },
@@ -68,7 +70,7 @@ export default class ChatScreen extends Component {
       imgURI: false,
       gif: null
     })
-    this.scrollView.scrollToEnd({ animated: true })
+    // this.myRef.current.scrollToEnd()
   }
 
   renderHeader() {
@@ -135,10 +137,15 @@ export default class ChatScreen extends Component {
 
   render() {
     const { activateEmoji, text, activateAttach, giphyData, emoticons, gifs } = this.state
-    console.log(this.state.gif)
+
     return (
       <View style={styles.container}>
-        <ScrollView ref={(ref) => { this.scrollView = ref }}>
+        <ScrollView ref={ref => this.scrollView = ref}
+          onContentSizeChange={(contentWidth, contentHeight) => {
+            this.scrollView.scrollToEnd({ animated: true })
+            console.log("new Width: ", contentWidth, "New Height", contentHeight)
+          }}
+        >
           <FlatList
             data={this.state.messages}
             extraData={this.state}
